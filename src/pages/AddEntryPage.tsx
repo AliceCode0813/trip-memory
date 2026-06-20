@@ -112,26 +112,27 @@ export function AddEntryPage() {
           }
 
           await editEntry(updatedEntry, previousImageId)
-        } else {
-          let receiptImageId = existingEntry.receiptImageId
-
-          if (photoFile) {
-            receiptImageId = await saveImage(photoFile)
-          }
-
-          const updatedEntry: Entry = {
-            ...existingEntry,
-            date,
-            itemName: itemName.trim(),
-            amount: Number(amount),
-            category,
-            receiptImageId,
-          }
-
-          await editEntry(updatedEntry, previousImageId)
+          navigate(`/trips/${tripId}/memories/${existingEntry.id}`)
+          return
         }
 
-        navigate(`/trips/${tripId}?tab=${getReturnTab()}`)
+        let receiptImageId = existingEntry.receiptImageId
+
+        if (photoFile) {
+          receiptImageId = await saveImage(photoFile)
+        }
+
+        const updatedEntry: Entry = {
+          ...existingEntry,
+          date,
+          itemName: itemName.trim(),
+          amount: Number(amount),
+          category,
+          receiptImageId,
+        }
+
+        await editEntry(updatedEntry, previousImageId)
+        navigate(`/trips/${tripId}?tab=expenses`)
         return
       }
 
@@ -203,7 +204,11 @@ export function AddEntryPage() {
     <Layout
       title={title}
       subtitle={subtitle}
-      backTo={`/trips/${tripId}${isEdit ? `?tab=${getReturnTab()}` : ''}`}
+      backTo={
+        isEdit && existingEntry?.type === 'memory'
+          ? `/trips/${tripId}/memories/${existingEntry.id}`
+          : `/trips/${tripId}${isEdit ? `?tab=${getReturnTab()}` : ''}`
+      }
       hideBrand
     >
       <form className="space-y-5" onSubmit={handleSubmit}>

@@ -11,9 +11,16 @@ interface DailyComparisonProps {
   entries: Entry[]
   onDeleteEntry?: (id: string) => void
   onEditEntry?: (entry: Entry) => void
+  onViewMemory?: (entry: Entry) => void
 }
 
-export function DailyComparison({ trip, entries, onDeleteEntry, onEditEntry }: DailyComparisonProps) {
+export function DailyComparison({
+  trip,
+  entries,
+  onDeleteEntry,
+  onEditEntry,
+  onViewMemory,
+}: DailyComparisonProps) {
   const days = useMemo(() => buildDailySummaries(trip, entries), [trip, entries])
   const insights = useMemo(() => getDailyInsights(days), [days])
   const maxSpent = useMemo(() => Math.max(...days.map((day) => day.spent), 1), [days])
@@ -205,8 +212,9 @@ export function DailyComparison({ trip, entries, onDeleteEntry, onEditEntry }: D
                 key={entry.id}
                 entry={entry}
                 currency={trip.currency}
-                onDelete={onDeleteEntry}
-                onEdit={onEditEntry}
+                onDelete={entry.type === 'expense' ? onDeleteEntry : undefined}
+                onEdit={entry.type === 'expense' ? onEditEntry : undefined}
+                onViewMemory={entry.type === 'memory' ? onViewMemory : undefined}
               />
             ))}
           </div>

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Camera, Receipt, Trash2 } from 'lucide-react'
 import { DailyComparison } from '../components/DailyComparison'
 import { EmptyState } from '../components/EmptyState'
+import { MemoryCard } from '../components/MemoryCard'
 import { Layout } from '../components/Layout'
 import { TimelineItem } from '../components/TimelineItem'
 import { useTrips } from '../context/TripContext'
@@ -82,6 +83,10 @@ export function TripPage() {
     navigate(`/trips/${tripId}/add?type=${entry.type}&entryId=${entry.id}`)
   }
 
+  function handleViewMemory(entry: Entry) {
+    navigate(`/trips/${tripId}/memories/${entry.id}`)
+  }
+
   function setTab(nextTab: Tab) {
     setSearchParams({ tab: nextTab })
   }
@@ -150,6 +155,7 @@ export function TripPage() {
           entries={entries}
           onDeleteEntry={handleDeleteEntry}
           onEditEntry={handleEditEntry}
+          onViewMemory={handleViewMemory}
         />
       )}
 
@@ -167,8 +173,9 @@ export function TripPage() {
                 key={entry.id}
                 entry={entry}
                 currency={trip.currency}
-                onDelete={handleDeleteEntry}
-                onEdit={handleEditEntry}
+                onDelete={entry.type === 'expense' ? handleDeleteEntry : undefined}
+                onEdit={entry.type === 'expense' ? handleEditEntry : undefined}
+                onViewMemory={entry.type === 'memory' ? handleViewMemory : undefined}
               />
             ))
           )}
@@ -209,13 +216,7 @@ export function TripPage() {
             </div>
           ) : (
             memories.map((entry) => (
-              <TimelineItem
-                key={entry.id}
-                entry={entry}
-                currency={trip.currency}
-                onDelete={handleDeleteEntry}
-                onEdit={handleEditEntry}
-              />
+              <MemoryCard key={entry.id} entry={entry} tripId={trip.id} />
             ))
           )}
         </div>

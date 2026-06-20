@@ -9,24 +9,21 @@ interface TimelineItemProps {
   currency: string
   onDelete?: (id: string) => void
   onEdit?: (entry: Entry) => void
+  onViewMemory?: (entry: Entry) => void
 }
 
-export function TimelineItem({ entry, currency, onDelete, onEdit }: TimelineItemProps) {
+export function TimelineItem({ entry, currency, onDelete, onEdit, onViewMemory }: TimelineItemProps) {
   const imageId = entry.type === 'expense' ? entry.receiptImageId : entry.photoImageId
   const imageUrl = useImageUrl(imageId)
   const isExpense = entry.type === 'expense'
+  const isViewableMemory = !isExpense && onViewMemory
 
-  return (
-    <article className="relative pl-8 before:absolute before:left-[11px] before:top-8 before:h-[calc(100%-8px)] before:w-px before:bg-brand-100 last:before:hidden">
-      <div className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white ring-4 ring-brand-50">
-        {isExpense ? (
-          <Receipt className="h-3.5 w-3.5 text-coral-500" />
-        ) : (
-          <Camera className="h-3.5 w-3.5 text-brand-600" />
-        )}
-      </div>
-
-      <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm">
+  const card = (
+    <div
+      className={`overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-sm ${
+        isViewableMemory ? 'transition hover:shadow-md active:scale-[0.99]' : ''
+      }`}
+    >
         {imageUrl && (
           <img src={imageUrl} alt="" className="max-h-56 w-full object-cover" />
         )}
@@ -57,7 +54,7 @@ export function TimelineItem({ entry, currency, onDelete, onEdit }: TimelineItem
                   {formatMoney(entry.amount, currency)}
                 </span>
               )}
-              {onEdit && (
+              {isExpense && onEdit && (
                 <button
                   type="button"
                   onClick={() => onEdit(entry)}
@@ -67,7 +64,7 @@ export function TimelineItem({ entry, currency, onDelete, onEdit }: TimelineItem
                   <Pencil className="h-4 w-4" />
                 </button>
               )}
-              {onDelete && (
+              {isExpense && onDelete && (
                 <button
                   type="button"
                   onClick={() => onDelete(entry.id)}
@@ -77,10 +74,34 @@ export function TimelineItem({ entry, currency, onDelete, onEdit }: TimelineItem
                   <Trash2 className="h-4 w-4" />
                 </button>
               )}
+              {isViewableMemory && (
+                <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
+                  보기
+                </span>
+              )}
             </div>
           </div>
         </div>
       </div>
+    )
+
+  return (
+    <article className="relative pl-8 before:absolute before:left-[11px] before:top-8 before:h-[calc(100%-8px)] before:w-px before:bg-brand-100 last:before:hidden">
+      <div className="absolute left-0 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white ring-4 ring-brand-50">
+        {isExpense ? (
+          <Receipt className="h-3.5 w-3.5 text-coral-500" />
+        ) : (
+          <Camera className="h-3.5 w-3.5 text-brand-600" />
+        )}
+      </div>
+
+      {isViewableMemory ? (
+        <button type="button" onClick={() => onViewMemory(entry)} className="block w-full text-left">
+          {card}
+        </button>
+      ) : (
+        card
+      )}
     </article>
   )
 }
