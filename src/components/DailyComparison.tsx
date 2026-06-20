@@ -10,9 +10,10 @@ interface DailyComparisonProps {
   trip: Trip
   entries: Entry[]
   onDeleteEntry?: (id: string) => void
+  onEditEntry?: (entry: Entry) => void
 }
 
-export function DailyComparison({ trip, entries, onDeleteEntry }: DailyComparisonProps) {
+export function DailyComparison({ trip, entries, onDeleteEntry, onEditEntry }: DailyComparisonProps) {
   const days = useMemo(() => buildDailySummaries(trip, entries), [trip, entries])
   const insights = useMemo(() => getDailyInsights(days), [days])
   const maxSpent = useMemo(() => Math.max(...days.map((day) => day.spent), 1), [days])
@@ -205,6 +206,7 @@ export function DailyComparison({ trip, entries, onDeleteEntry }: DailyCompariso
                 entry={entry}
                 currency={trip.currency}
                 onDelete={onDeleteEntry}
+                onEdit={onEditEntry}
               />
             ))}
           </div>

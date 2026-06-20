@@ -9,8 +9,6 @@ import { useTrips } from '../context/TripContext'
 import { getTrip, getTripStats } from '../lib/db'
 import {
   EXPENSE_CATEGORIES,
-  getCategoryEmoji,
-  getCategoryLabel,
 } from '../lib/constants'
 import { formatDate, formatMoney } from '../lib/format'
 import type { Entry, Trip } from '../types'
@@ -80,6 +78,10 @@ export function TripPage() {
     await loadTripData()
   }
 
+  function handleEditEntry(entry: Entry) {
+    navigate(`/trips/${tripId}/add?type=${entry.type}&entryId=${entry.id}`)
+  }
+
   function setTab(nextTab: Tab) {
     setSearchParams({ tab: nextTab })
   }
@@ -147,6 +149,7 @@ export function TripPage() {
           trip={trip}
           entries={entries}
           onDeleteEntry={handleDeleteEntry}
+          onEditEntry={handleEditEntry}
         />
       )}
 
@@ -165,6 +168,7 @@ export function TripPage() {
                 entry={entry}
                 currency={trip.currency}
                 onDelete={handleDeleteEntry}
+                onEdit={handleEditEntry}
               />
             ))
           )}
@@ -172,7 +176,7 @@ export function TripPage() {
       )}
 
       {tab === 'expenses' && (
-        <div className="space-y-3">
+        <div className="space-y-5">
           {expenses.length === 0 ? (
             <EmptyState
               emoji="🧾"
@@ -181,20 +185,13 @@ export function TripPage() {
             />
           ) : (
             expenses.map((entry) => (
-              <div key={entry.id} className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm text-slate-400">{formatDate(entry.date, 'M월 d일')}</p>
-                    <h3 className="mt-1 font-semibold text-slate-900">{entry.itemName}</h3>
-                    <p className="mt-1 text-sm text-slate-500">
-                      {getCategoryEmoji(entry.category)} {getCategoryLabel(entry.category)}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-800">
-                    {formatMoney(entry.amount ?? 0, trip.currency)}
-                  </span>
-                </div>
-              </div>
+              <TimelineItem
+                key={entry.id}
+                entry={entry}
+                currency={trip.currency}
+                onDelete={handleDeleteEntry}
+                onEdit={handleEditEntry}
+              />
             ))
           )}
         </div>
@@ -217,6 +214,7 @@ export function TripPage() {
                 entry={entry}
                 currency={trip.currency}
                 onDelete={handleDeleteEntry}
+                onEdit={handleEditEntry}
               />
             ))
           )}
@@ -271,7 +269,7 @@ export function TripPage() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-lg -translate-x-1/2 px-4 pb-4 safe-bottom">
+      <div className="fixed bottom-0 left-1/2 z-30 w-full max-w-lg -translate-x-1/2 px-4 pb-5 safe-bottom">
         <div className="grid grid-cols-2 gap-3 rounded-[1.75rem] border border-white/70 bg-white/95 p-3 shadow-2xl backdrop-blur-xl">
           <Link
             to={`/trips/${trip.id}/add?type=expense`}
@@ -290,7 +288,7 @@ export function TripPage() {
         </div>
       </div>
 
-      <div className="h-28" />
+      <div className="h-32" />
     </Layout>
   )
 }

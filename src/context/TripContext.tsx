@@ -11,9 +11,11 @@ import {
   createEntry,
   createTrip,
   deleteEntry,
+  deleteImage,
   deleteTrip,
   listEntries,
   listTrips,
+  updateEntry,
 } from '../lib/db'
 import type { Entry, Trip, TripWithStats } from '../types'
 
@@ -24,6 +26,7 @@ interface TripContextValue {
   addTrip: (trip: Trip) => Promise<void>
   removeTrip: (id: string) => Promise<void>
   addEntry: (entry: Entry) => Promise<void>
+  editEntry: (entry: Entry, previousImageId?: string) => Promise<void>
   removeEntry: (id: string) => Promise<void>
   getEntries: (tripId: string) => Promise<Entry[]>
 }
@@ -71,6 +74,20 @@ export function TripProvider({ children }: { children: ReactNode }) {
     [refreshTrips],
   )
 
+  const editEntry = useCallback(
+    async (entry: Entry, previousImageId?: string) => {
+      const currentImageId = entry.photoImageId ?? entry.receiptImageId
+
+      if (previousImageId && currentImageId && previousImageId !== currentImageId) {
+        await deleteImage(previousImageId)
+      }
+
+      await updateEntry(entry)
+      await refreshTrips()
+    },
+    [refreshTrips],
+  )
+
   const removeEntry = useCallback(
     async (id: string) => {
       await deleteEntry(id)
@@ -89,10 +106,11 @@ export function TripProvider({ children }: { children: ReactNode }) {
       addTrip,
       removeTrip,
       addEntry,
+      editEntry,
       removeEntry,
       getEntries,
     }),
-    [trips, loading, refreshTrips, addTrip, removeTrip, addEntry, removeEntry, getEntries],
+    [trips, loading, refreshTrips, addTrip, removeTrip, addEntry, editEntry, removeEntry, getEntries],
   )
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>

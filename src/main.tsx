@@ -9,6 +9,7 @@ import App from './App.tsx'
 async function initNativeShell() {
   if (!Capacitor.isNativePlatform()) return
 
+  await StatusBar.setOverlaysWebView({ overlay: false })
   await StatusBar.setStyle({ style: Style.Light })
   await StatusBar.setBackgroundColor({ color: '#0f766e' })
   await SplashScreen.hide()

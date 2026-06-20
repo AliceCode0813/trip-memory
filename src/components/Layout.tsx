@@ -20,9 +20,9 @@ export function Layout({
   hideBrand = false,
 }: LayoutProps) {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col">
-      <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 backdrop-blur-xl">
-        <div className="flex items-start justify-between gap-3 px-4 py-4">
+    <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col safe-top">
+      <header className="sticky top-0 z-20 border-b border-white/60 bg-white/80 pt-2 backdrop-blur-xl">
+        <div className="flex items-start justify-between gap-3 px-4 pb-4">
           <div className="flex min-w-0 items-start gap-3">
             {backTo && (
               <Link

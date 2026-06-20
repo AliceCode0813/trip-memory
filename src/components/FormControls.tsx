@@ -59,18 +59,20 @@ export function PhotoPicker({
   label,
   hint,
   onChange,
+  source = 'gallery',
 }: {
   previewUrl?: string
   label: string
   hint: string
   onChange: (file: File | null) => void
+  source?: 'camera' | 'gallery'
 }) {
   return (
     <label className="block cursor-pointer">
       <input
         type="file"
         accept="image/*"
-        capture="environment"
+        {...(source === 'camera' ? { capture: 'environment' } : {})}
         className="hidden"
         onChange={(event) => onChange(event.target.files?.[0] ?? null)}
       />

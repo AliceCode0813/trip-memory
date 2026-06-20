@@ -1,4 +1,4 @@
-import { Camera, Receipt, Trash2 } from 'lucide-react'
+import { Camera, Pencil, Receipt, Trash2 } from 'lucide-react'
 import { useImageUrl } from '../hooks/useImageUrl'
 import { getCategoryEmoji, getCategoryLabel } from '../lib/constants'
 import { formatDateTime, formatMoney } from '../lib/format'
@@ -8,9 +8,10 @@ interface TimelineItemProps {
   entry: Entry
   currency: string
   onDelete?: (id: string) => void
+  onEdit?: (entry: Entry) => void
 }
 
-export function TimelineItem({ entry, currency, onDelete }: TimelineItemProps) {
+export function TimelineItem({ entry, currency, onDelete, onEdit }: TimelineItemProps) {
   const imageId = entry.type === 'expense' ? entry.receiptImageId : entry.photoImageId
   const imageUrl = useImageUrl(imageId)
   const isExpense = entry.type === 'expense'
@@ -50,11 +51,21 @@ export function TimelineItem({ entry, currency, onDelete }: TimelineItemProps) {
               )}
             </div>
 
-            <div className="flex shrink-0 items-start gap-2">
+            <div className="flex shrink-0 items-start gap-1">
               {isExpense && entry.amount != null && (
                 <span className="rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-800">
                   {formatMoney(entry.amount, currency)}
                 </span>
+              )}
+              {onEdit && (
+                <button
+                  type="button"
+                  onClick={() => onEdit(entry)}
+                  className="rounded-full p-2 text-slate-400 transition hover:bg-brand-50 hover:text-brand-700"
+                  aria-label="수정"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
               )}
               {onDelete && (
                 <button

@@ -116,6 +116,17 @@ export async function listTrips(): Promise<TripWithStats[]> {
     })
 }
 
+export async function getEntry(id: string) {
+  const db = await getDb()
+  return db.get('entries', id)
+}
+
+export async function updateEntry(entry: Entry) {
+  const db = await getDb()
+  await db.put('entries', entry)
+  return entry
+}
+
 export async function createEntry(entry: Entry) {
   const db = await getDb()
   await db.put('entries', entry)
